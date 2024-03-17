@@ -72,7 +72,7 @@ export default function Home() {
         </select>
         <button
           type="button"
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          className="bg-cyan-900 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded"
           onClick={postDataToBackend}
         >
           Send Data to Backend
