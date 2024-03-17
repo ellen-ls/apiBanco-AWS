@@ -27,6 +27,10 @@ export default function Home() {
     setType(e.target.value as 'credit' | 'debit');
   };
 
+  const formatCurrency = (value: number) => {
+    return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  };
+
   const postDataToBackend = async () => {
     const data: TransactionData = {
       idempotencyId: generateIdempotencyId(), // Gerando um idempotencyId automático
@@ -44,27 +48,37 @@ export default function Home() {
   };
 
   return (
-    <div>
+    <div className="max-w-md mx-auto mt-10 p-6 bg-slate-900 rounded-lg shadow-md">
+      <h1 className="text-2xl text-white text-center font-bold mb-4">Trasação</h1>
       <form>
-        <label htmlFor="amount">Amount:</label>
+        <label htmlFor="amount" className="block mb-2 text-white">Amount:</label>
         <input
           type="number"
           id="amount"
+          className="border border-gray-300 rounded px-4 py-2 mb-4 w-full"
           value={amount}
           onChange={handleAmountChange}
         />
-        <br />
-        <label htmlFor="type">Type:</label>
-        <select id="type" value={type} onChange={handleTypeChange}>
+        <p className="text-teal-200 mt-2">Amount: {formatCurrency(amount)}</p>
+        <label htmlFor="type" className="block mb-2 text-white">Type:</label>
+        <select
+          id="type"
+          className="border border-gray-300 rounded px-4 py-2 mb-4 w-full"
+          value={type}
+          onChange={handleTypeChange}
+        >
           <option value="credit">Credit</option>
           <option value="debit">Debit</option>
         </select>
-        <br />
-        <button type="button" onClick={postDataToBackend}>
+        <button
+          type="button"
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          onClick={postDataToBackend}
+        >
           Send Data to Backend
         </button>
       </form>
-      <p>{message}</p>
+      {message && <p className='mt-4 text-cyan-100' >{message}</p>}
     </div>
   );
 }
