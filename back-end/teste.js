@@ -1,27 +1,47 @@
 const axios = require('axios');
+const https = require('https');
 
-async function createTransactions() {
-  const baseURL = 'https://localhost:3000'; // Altere para o URL correto da sua API
-  const transactions = [];
+// URL da API para onde as transações serão enviadas
+const url = 'http://localhost:3001/transacoes';
 
-  for (let i = 0; i < 100; i++) {
-    const transaction = {
-      idempotencyId: `id${i}`,
-      amount: Math.floor(Math.random() * 1000) + 1,
-      type: i % 2 === 0 ? 'credit' : 'debit',
+// Função para gerar uma transação aleatória
+function gerarTransacao() {
+    return {
+        id: Math.floor(Math.random() * 1000) + 1, // ID da transação (exemplo)
+        valor: (Math.random() * (1000 - 10) + 10).toFixed(2), // Valor da transação (exemplo)
+        descricao: `Transação ${Math.floor(Math.random() * 100) + 1}` // Descrição da transação (exemplo)
     };
-
-    transactions.push(transaction);
-  }
-
-  try {
-    for (const transaction of transactions) {
-      await axios.post(`${baseURL}/transacoes`, transaction);
-    }
-    console.log('Transactions created successfully.');
-  } catch (err) {
-    console.error('Error creating transactions:', err);
-  }
 }
 
-createTransactions();
+// Array para armazenar as transações
+const transacoes = [];
+
+// Gerar 100 transações aleatórias
+for (let i = 0; i < 100; i++) {
+    const transacao = gerarTransacao();
+    transacoes.push(transacao);
+}
+
+// Enviar as transações via POST para a API
+async function enviarTransacoes() {
+    const agent = new https.Agent({  
+        rejectUnauthorized: false,
+        secureProtocol: 'TLSv1_2_method'  // Definindo a versão do protocolo SSL/TLS
+    });
+
+    for (const transacao of transacoes) {
+        try {
+            const response = await axios.post(url, transacao, {
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                httpsAgent: agent  // Usando o agente HTTPS personalizado
+            });
+            console.log(`Transação enviada com sucesso: ${JSON.stringify(transacao)}`);
+        } catch (error) {
+            console.error(`Erro ao enviar transação: ${error.message}`);
+        }
+    }
+}
+
+enviarTransacoes();
